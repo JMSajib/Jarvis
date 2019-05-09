@@ -8,6 +8,7 @@ import pyttsx3
 import webbrowser
 import wikipedia
 import wolframalpha
+import geocoder
 
 
 engine = pyttsx3.init('sapi5')
@@ -22,16 +23,30 @@ def speak(audio):
     engine.say(audio)
     engine.runAndWait()
 
+def weather(city,country):
+    weather_city = "weather forecast in "+city
+    speak("You are in "+city+", "+country)
+    res = client.query(weather_city)
+    output = next(res.results).text
+    speak("Temperature in "+ city +" " +output)    
+
 def greetMe():
+    g = geocoder.ip('me')
+    city = g.city
+    country = g.country
+
     currentH = int(datetime.datetime.now().hour)
     if currentH >= 0 and currentH < 12:
         speak('Good Morning!')
+        weather(city,country)
 
     if currentH >= 12 and currentH < 18:
         speak('Good Afternoon!')
+        weather(city,country)
 
     if currentH >= 18 and currentH !=0:
         speak('Good Evening!')
+        weather(city,country)
 
 # greetMe()
 
@@ -59,6 +74,7 @@ def myCommand():
 
 if __name__ == '__main__':
     speak('Hello Sir, I am your digital assistant Jarvis!')
+    greetMe()
     speak('How may I help you?')
 
     while True:
@@ -83,7 +99,7 @@ if __name__ == '__main__':
             speak(random.choice(stMsgs))
 
         elif 'how old are you' in query:
-            stMsgs = ['I am a baby Jarvis','why i tell you','I am a Program and I have no age']
+            stMsgs = ['I am a baby Jarvis','why sholud i tell you','I am a Program and I have no age']
             speak(random.choice(stMsgs))     
 
         elif 'email' in query:
@@ -118,7 +134,7 @@ if __name__ == '__main__':
             speak('Hello Sir')
             greetMe()
                                     
-        elif 'play music' in query:
+        elif 'play music' in query or 'music' in query:
             music_folder = 'C:/Users/jahid/Downloads/audio/'
             music = ['music1', 'music2', 'music3', 'music4', 'music5']
             random_music = music_folder + random.choice(music) + '.mp3'
