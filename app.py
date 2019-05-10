@@ -3,6 +3,7 @@ import sys
 import datetime
 import smtplib
 import random
+import yaml
 import speech_recognition as sr
 import pyttsx3
 import webbrowser
@@ -11,9 +12,11 @@ import wolframalpha
 import geocoder
 
 
+conf = yaml.load(open('./application.yml'))
+
 engine = pyttsx3.init('sapi5')
 
-client = wolframalpha.Client('VU4E2U-UAUQ288QJA')
+client = wolframalpha.Client(conf['client_id'])
 
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[len(voices)-3].id)
@@ -102,20 +105,23 @@ if __name__ == '__main__':
             stMsgs = ['I am a baby Jarvis','why sholud i tell you','I am a Program and I have no age']
             speak(random.choice(stMsgs))     
 
-        elif 'email' in query:
-            speak('Who is the recipient? ')
-            recipient = myCommand()
+        elif 'email' in query or 'mail' in query:
+            speak('Who is the Sender? ')
+            sender = myCommand()
 
-            if 'mi' in recipient or 'me' in recipient:
+            if 'MI' in sender or 'mi' in sender or 'me' in sender:
                 try:
+                    speak('What is the Subject?')
+                    subject = myCommand()
                     speak('What should I say? ')
                     content = myCommand()
                     speak('Ok Sir,Please Wait...')
+                    message = 'Subject: {}\n\n{}'.format(subject, content)
                     server = smtplib.SMTP('smtp.gmail.com', 587)
                     server.ehlo()
                     server.starttls()
-                    server.login("jmsajibcse@gmail.com", '06286124589')
-                    server.sendmail('jmsajibcse@gmail.com', "sazidcsemail@gmail.com", content)
+                    server.login(conf['email'],conf['password'])
+                    server.sendmail(conf['email'], "jm.sajib012@gmail.com", message)
                     server.close()
                     speak('Email Has Been Sent!')
 
